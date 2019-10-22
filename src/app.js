@@ -4,14 +4,17 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
+const articlesRouter = require("./articles/articles-router");
 
 const app = express();
 
 const morganOption = NODE_ENV === "production" ? "tiny" : "common"; //or use dev in place of common
 
-app.use(morgan(morganOption));
+app.use(morgan(morganOption, { skip: () => NODE_ENV === "test" }));
 app.use(helmet());
 app.use(cors());
+
+app.use("/articles", articlesRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, world!");
