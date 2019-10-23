@@ -1,8 +1,17 @@
 const express = require("express");
+const xss = require("xss");
 const ArticlesService = require("./articles-service");
 
 const ArticlesRouter = express.Router();
 const jsonParser = express.json();
+
+const sanitizeArticle = article => ({
+  id: article.id,
+  style: article.style,
+  title: xss(article.title),
+  content: xss(article.content),
+  date_published: article.date_published
+});
 
 ArticlesRouter.route("/")
   .get((req, res, next) => {
@@ -42,10 +51,19 @@ ArticlesRouter.route("/")
     ArticlesService.insertArticle(req.app.get("db"), newArticle)
 
       .then(article => {
-        res
-          .status(201)
-          .location(`/articles/${article.id}`)
-          .json(article);
+        res.status(201).location(`/articles/${article.id}`);
+        //.json(article);
+        res.json(sanitizeArticle(article));
+
+        /* ======= Repeating code ========
+        res.json({
+          id: article.id,
+          style: article.style,
+          title: xss(article.title), //sanitize title
+          content: xss(article.content), //sanitize content
+          date_published: article.date_published
+        });
+        ================================== */
       })
       .catch(next);
   });
@@ -60,7 +78,18 @@ ArticlesRouter.route("/:article_id").get((req, res, next) => {
           error: { message: `Article doesn't exist` }
         });
       }
-      res.json(article);
+      //      res.json(article);
+      res.json(sanitizeArticle(article));
+
+      /* ======= Repeating code ========
+      res.json({
+        id: article.id,
+        style: article.style,
+        title: xss(article.title), //sanitize title
+        content: xss(article.content), //sanitize content
+        date_published: article.date_published
+      });
+      ================================== */
     })
     .catch(next);
 });

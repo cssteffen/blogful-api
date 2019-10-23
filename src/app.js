@@ -20,6 +20,12 @@ app.get("/", (req, res) => {
   res.send("Hello, world!");
 });
 
+//sample malicious xss attack
+app.get("/xss", (req, res) => {
+  res.cookie("secretToken", "1234567890");
+  res.sendFile(__dirname + "/xss-example.html");
+});
+
 //production app hides error messages from users & malicious parties
 app.use(function errorHandler(error, req, res, next) {
   let response;
