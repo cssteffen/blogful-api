@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const xss = require("xss");
 const ArticlesService = require("./articles-service");
@@ -51,7 +52,9 @@ ArticlesRouter.route("/")
     ArticlesService.insertArticle(req.app.get("db"), newArticle)
 
       .then(article => {
-        res.status(201).location(`/articles/${article.id}`);
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl + `/${article.id}`));
         //.json(article);
         res.json(sanitizeArticle(article));
 
@@ -118,6 +121,31 @@ ArticlesRouter.route("/:article_id")
     const knexInstance = req.app.get("db");
     ArticlesService.deleteArticle(knexInstance, req.params.article_id)
       .then(() => {
+        res.status(204).end();
+      })
+      .catch(next);
+  })
+  .patch(jsonParser, (req, res, next) => {
+    const { title, content, style } = req.body;
+    const articleToUpdate = { title, content, style };
+
+    const numberOfValues = Object.values(articleToUpdate).filter(Boolean)
+      .length;
+    if (numberOfValues === 0) {
+      return res.status(400).json({
+        error: {
+          message:
+            "Request body must contain either 'title', 'style' or 'content'"
+        }
+      });
+    }
+
+    ArticlesService.updateArticle(
+      req.app.get("db"),
+      req.params.article_id,
+      articleToUpdate
+    )
+      .then(numRowsAffected => {
         res.status(204).end();
       })
       .catch(next);
