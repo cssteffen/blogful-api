@@ -1,3 +1,13 @@
+INSERT INTO blogful_users
+    (username, fullname, nickname, password)
+VALUES
+    ('dunder', 'Dunder Mifflin', null, 'password'),
+    ('b.deboop', 'Bodeep Deboop', 'Bo', 'bo-password'),
+    ('c.bloggs', 'Charlie Bloggs', 'Charlie', 'charlie-password'),
+    ('s.smith', 'Sam Smith', 'Sam', 'sam-password'),
+    ('lexlor', 'Alex Taylor', 'Lex', 'lex-password'),
+    ('wippy', 'Ping Won In', 'Ping', 'ping-password');
+
 INSERT INTO blogful_articles
     (title, style, content)
 VALUES
