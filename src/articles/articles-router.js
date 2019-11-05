@@ -11,7 +11,8 @@ const sanitizeArticle = article => ({
   style: article.style,
   title: xss(article.title),
   content: xss(article.content),
-  date_published: article.date_published
+  date_published: article.date_published,
+  author: article.author
 });
 
 ArticlesRouter.route("/")
@@ -24,7 +25,7 @@ ArticlesRouter.route("/")
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, content, style } = req.body;
+    const { title, content, style, author } = req.body;
     const newArticle = { title, content, style };
 
     /* === repeating info ===========
@@ -49,6 +50,7 @@ ArticlesRouter.route("/")
       }
     }
 
+    newArticle.author = author;
     ArticlesService.insertArticle(req.app.get("db"), newArticle)
 
       .then(article => {

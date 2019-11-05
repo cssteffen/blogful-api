@@ -79,13 +79,13 @@ usersRouter
     const userToUpdate = { fullname, username, password, nickname };
 
     const numberOfValues = Object.values(userToUpdate).filter(Boolean).length;
+
     if (numberOfValues === 0)
       return res.status(400).json({
         error: {
           message: `Request body must contain either 'fullname', 'username', 'password' or 'nickname'`
         }
       });
-
     UsersService.updateUser(req.app.get("db"), req.params.user_id, userToUpdate)
       .then(numRowsAffected => {
         res.status(204).end();
